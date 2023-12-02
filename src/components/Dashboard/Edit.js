@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import { editEmployee } from '../../api';
 
 const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
   const id = selectedEmployee.id;
@@ -10,7 +11,7 @@ const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
   const [salary, setSalary] = useState(selectedEmployee.salary);
   const [date, setDate] = useState(selectedEmployee.date);
 
-  const handleUpdate = e => {
+  const handleUpdate = async(e) => {
     e.preventDefault();
 
     if (!firstName || !lastName || !email || !salary || !date) {
@@ -31,15 +32,17 @@ const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
       date,
     };
 
-    for (let i = 0; i < employees.length; i++) {
-      if (employees[i].id === id) {
-        employees.splice(i, 1, employee);
-        break;
+    const editedEmployee = await editEmployee(employee);
+    setEmployees((prevEmployees) => {
+      return prevEmployees.map((prevEmployee) => {
+        if (editedEmployee.id === prevEmployee.id) {
+          return editedEmployee;
+        }
+        return prevEmployee;
       }
-    }
+      );
+    });
 
-    localStorage.setItem('employees_data', JSON.stringify(employees));
-    setEmployees(employees);
     setIsEditing(false);
 
     Swal.fire({

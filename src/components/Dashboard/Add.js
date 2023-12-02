@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import { addEmployee } from '../../api';
 
 const Add = ({ employees, setEmployees, setIsAdding }) => {
   const [firstName, setFirstName] = useState('');
@@ -8,7 +9,7 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
   const [salary, setSalary] = useState('');
   const [date, setDate] = useState('');
 
-  const handleAdd = e => {
+  const handleAdd = async (e) => {
     e.preventDefault();
 
     if (!firstName || !lastName || !email || !salary || !date) {
@@ -30,9 +31,9 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
       date,
     };
 
-    employees.push(newEmployee);
-    localStorage.setItem('employees_data', JSON.stringify(employees));
-    setEmployees(employees);
+    
+    const newEmployeeResponse = await addEmployee(newEmployee);
+    setEmployees(prevEmployee => [...prevEmployee, newEmployeeResponse]);
     setIsAdding(false);
 
     Swal.fire({
