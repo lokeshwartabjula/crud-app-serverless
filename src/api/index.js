@@ -1,4 +1,4 @@
-const makeHttpRequest = (url, method = 'GET', data = {}) => {
+const makeHttpRequest = (url, method = 'GET', data = {}, requestHeaders) => {
   method = method.toUpperCase();
   const namespace = '';
   let requestUrl;
@@ -14,9 +14,15 @@ const makeHttpRequest = (url, method = 'GET', data = {}) => {
   };
 
   let requestBody = {
-    headers,
     method,
   };
+  
+  if (requestHeaders) {
+    requestBody.headers = requestHeaders;
+  } else {
+    requestBody.headers = headers;
+  }
+
   if (data) {
     requestBody.body = JSON.stringify(data);
   }
@@ -35,8 +41,8 @@ const get = (url) => {
   return makeHttpRequest(url, 'get', null);
 };
 
-const post = (url, data = {}) => {
-  return makeHttpRequest(url, 'post', data);
+const post = (url, data = {}, headers) => {
+  return makeHttpRequest(url, 'post', data, headers);
 };
 
 const patch = (url, data = {}) => {
@@ -52,6 +58,16 @@ const addEmployee = (data) => {
   // TO DO: return post('https://run.mocky.io/v3/0bb7f0c8-2e2e-439e-9dad-5f20adde3555', data);
 };
 
+const addProfileImageEmployee = (data, id) => {
+  return post('https://run.mocky.io/v3/0bb7f0c8-2e2e-439e-9dad-5f20adde3555', data, {
+    Accept: 'application/json',
+    'Content-Type': 'multipart/form-data',
+  });
+  // TO DO: return post(`add-profile-image/${id}`, data,{
+  //  'Content-Type': 'multipart/form-data',
+  // })
+}
+
 const editEmployee = (data) => {
   return get('https://run.mocky.io/v3/a336bccd-afcd-4107-8c26-57bc43bf62e1', null);
   // TO DO: return patch('https://run.mocky.io/v3/0bb7f0c8-2e2e-439e-9dad-5f20adde3555', data);
@@ -65,5 +81,6 @@ export {
   getEmployeeList,
   addEmployee,
   editEmployee,
-  deleteEmployee
+  deleteEmployee,
+  addProfileImageEmployee
 };

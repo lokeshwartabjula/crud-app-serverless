@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-import { addEmployee } from '../../api';
+import { addEmployee, addProfileImageEmployee } from '../../api';
 
 const Add = ({ employees, setEmployees, setIsAdding }) => {
   const [firstName, setFirstName] = useState('');
@@ -8,11 +8,12 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
   const [email, setEmail] = useState('');
   const [salary, setSalary] = useState('');
   const [date, setDate] = useState('');
+  const [profile, setProfile] = useState(null);
 
   const handleAdd = async (e) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !email || !salary || !date) {
+    if (!firstName || !lastName || !email || !salary || !date || !profile) {
       return Swal.fire({
         icon: 'error',
         title: 'Error!',
@@ -31,8 +32,14 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
       date,
     };
 
+    let formData = new FormData();
+    formData.append('profile', profile, profile.name);
     
     const newEmployeeResponse = await addEmployee(newEmployee);
+    const uplodadImage = await addProfileImageEmployee(formData, id);
+    if (uplodadImage) {
+      newEmployee.profile = uplodadImage.profile;
+    }
     setEmployees(prevEmployee => [...prevEmployee, newEmployeeResponse]);
     setIsAdding(false);
 
@@ -88,6 +95,14 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
           name="date"
           value={date}
           onChange={e => setDate(e.target.value)}
+        />
+        <label htmlFor="profile">Profile</label>
+        <input
+          id="profile"
+          type="file"
+          name="profile"
+          accept="image/*"
+          onChange={e => setProfile(e.target.files[0])}
         />
         <div style={{ marginTop: '30px' }}>
           <input type="submit" value="Add" />
