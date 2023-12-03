@@ -10,8 +10,12 @@ const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
   const [email, setEmail] = useState(selectedEmployee.email);
   const [salary, setSalary] = useState(selectedEmployee.salary);
   const [date, setDate] = useState(selectedEmployee.date);
+  const placeholderImageURL = 'https://www.pngarts.com/files/2/Upload-PNG-Transparent-Image.png';
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(placeholderImageURL);
+  const username = "image";
 
-  const handleUpdate = async(e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
     if (!firstName || !lastName || !email || !salary || !date) {
@@ -52,6 +56,67 @@ const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
       showConfirmButton: false,
       timer: 1500,
     });
+  };
+
+
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewImage(placeholderImageURL);
+    }
+  };
+
+  const handleUploadImage = () => {
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Image = event.target.result.split(',')[1];
+        const timestamp = Date.now();
+        const filename = `${username}_content_${id}.jpg`;
+        const requestBody = {
+          content: base64Image,
+          username: username,
+          filename: filename,
+        };
+        console.log(requestBody);
+
+        fetch('https://atk13nn80e.execute-api.us-east-1.amazonaws.com/dev', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Failed to upload image');
+            }
+          })
+          .then((data) => {
+            console.log(data);
+            alert('Image uploaded successfully!');
+            sessionStorage.setItem('filename', filename);
+          })
+          .catch((error) => {
+            console.error(error);
+            alert('Error uploading image');
+          });
+      };
+
+      reader.readAsDataURL(selectedFile);
+    } else {
+      alert('Please choose an image to upload.');
+    }
   };
 
   return (
@@ -98,6 +163,12 @@ const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
           value={date}
           onChange={e => setDate(e.target.value)}
         />
+        <div >
+          <input type="file" id="uploadInput" onChange={handleFileInputChange} />
+          <button onClick={handleUploadImage} >
+            Upload Image
+          </button>
+        </div>
         <div style={{ marginTop: '30px' }}>
           <input type="submit" value="Update" />
           <input
