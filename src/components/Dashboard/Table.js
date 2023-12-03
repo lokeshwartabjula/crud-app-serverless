@@ -1,9 +1,6 @@
 import React from 'react';
 
 const Table = ({ employees, handleEdit, handleDelete }) => {
-  employees.forEach((employee, i) => {
-    employee.id = i + 1;
-  });
 
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -17,6 +14,7 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
         <thead>
           <tr>
             <th>No.</th>
+            <th>Avatar</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>Email</th>
@@ -31,7 +29,8 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
           {employees.length > 0 ? (
             employees.map((employee, i) => (
               <tr key={employee.id}>
-                <td>{i + 1}</td>
+                <td>{employee.id}</td>
+                <td><img src={`https://b00936909-image-bucket.s3.amazonaws.com/image_content_${employee.id}.jpg` || "https://images.freeimages.com/images/large-previews/0f9/halloween-pumpkins-2-1199288.jpg?fmt=webp&w=350"} alt="avatar" className='employee-avatar'/></td>
                 <td>{employee.firstName}</td>
                 <td>{employee.lastName}</td>
                 <td>{employee.email}</td>

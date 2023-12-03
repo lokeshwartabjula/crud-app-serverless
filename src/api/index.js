@@ -1,8 +1,8 @@
 const makeHttpRequest = (url, method = 'GET', data = {}, requestHeaders) => {
   method = method.toUpperCase();
-  const namespace = '';
+  const namespace = 'https://zrizqyz3l8.execute-api.us-east-1.amazonaws.com/dev';
   let requestUrl;
-  if (url && namespace !== '') {
+  if (!url.includes('https') && namespace !== '') {
     requestUrl = `${namespace}/${url}`;
   } else {
     requestUrl = `${url}`;
@@ -49,38 +49,35 @@ const patch = (url, data = {}) => {
   return makeHttpRequest(url, 'PATCH', data);
 };
 
+const deleteRequest = (url) => {
+  return makeHttpRequest(url, 'DELETE', null);
+};
+
 const getEmployeeList = () => {
-  return get('https://run.mocky.io/v3/e4192315-3ac2-4b21-b5ca-274a3c205cee');
+  return get('getEmployees');
 };
 
 const addEmployee = (data) => {
-  return get('https://run.mocky.io/v3/0bb7f0c8-2e2e-439e-9dad-5f20adde3555', null);
-  // TO DO: return post('https://run.mocky.io/v3/0bb7f0c8-2e2e-439e-9dad-5f20adde3555', data);
+  return post('addEmployee', data);
 };
 
-const addProfileImageEmployee = (data, id) => {
-  return post('https://run.mocky.io/v3/0bb7f0c8-2e2e-439e-9dad-5f20adde3555', data, {
-    Accept: 'application/json',
-    'Content-Type': 'multipart/form-data',
-  });
-  // TO DO: return post(`add-profile-image/${id}`, data,{
-  //  'Content-Type': 'multipart/form-data',
-  // })
-}
-
 const editEmployee = (data) => {
-  return get('https://run.mocky.io/v3/a336bccd-afcd-4107-8c26-57bc43bf62e1', null);
-  // TO DO: return patch('https://run.mocky.io/v3/0bb7f0c8-2e2e-439e-9dad-5f20adde3555', data);
+  return patch('editEmployee', data);
 }
 
 const deleteEmployee = (id) => {
-  return get('https://run.mocky.io/v3/a336bccd-afcd-4107-8c26-57bc43bf62e1', null);
-  // TO DO: return delete('https://run.mocky.io/v3/0bb7f0c8-2e2e-439e-9dad-5f20adde3555', data);
+  return deleteRequest(`deleteEmployee?id=${id}`, null);
 }
+
+const authenticateUser = (data) => {
+  return get('https://run.mocky.io/v3/b698e412-4bc1-4948-870f-e4d68ea7efd0', data);
+  // TO DO: change url
+}
+
 export {
   getEmployeeList,
   addEmployee,
   editEmployee,
   deleteEmployee,
-  addProfileImageEmployee
+  authenticateUser
 };

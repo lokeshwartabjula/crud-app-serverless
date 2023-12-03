@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-import { addEmployee, addProfileImageEmployee } from '../../api';
+import { addEmployee } from '../../api';
 
 const Add = ({ employees, setEmployees, setIsAdding }) => {
   const [firstName, setFirstName] = useState('');
@@ -8,12 +8,11 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
   const [email, setEmail] = useState('');
   const [salary, setSalary] = useState('');
   const [date, setDate] = useState('');
-  const [profile, setProfile] = useState(null);
 
   const handleAdd = async (e) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !email || !salary || !date || !profile) {
+    if (!firstName || !lastName || !email || !salary || !date) {
       return Swal.fire({
         icon: 'error',
         title: 'Error!',
@@ -22,7 +21,7 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
       });
     }
 
-    const id = employees.length + 1;
+    const id = Math.floor(Math.random() * 100000) + 1;;
     const newEmployee = {
       id,
       firstName,
@@ -32,16 +31,12 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
       date,
     };
 
-    let formData = new FormData();
-    formData.append('profile', profile, profile.name);
     
     const newEmployeeResponse = await addEmployee(newEmployee);
-    const uplodadImage = await addProfileImageEmployee(formData, id);
-    if (uplodadImage) {
-      newEmployee.profile = uplodadImage.profile;
+    if (newEmployeeResponse) {
+      setEmployees(prevEmployee => [...prevEmployee, newEmployee]);
+      setIsAdding(false);
     }
-    setEmployees(prevEmployee => [...prevEmployee, newEmployeeResponse]);
-    setIsAdding(false);
 
     Swal.fire({
       icon: 'success',
@@ -95,14 +90,6 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
           name="date"
           value={date}
           onChange={e => setDate(e.target.value)}
-        />
-        <label htmlFor="profile">Profile</label>
-        <input
-          id="profile"
-          type="file"
-          name="profile"
-          accept="image/*"
-          onChange={e => setProfile(e.target.files[0])}
         />
         <div style={{ marginTop: '30px' }}>
           <input type="submit" value="Add" />
