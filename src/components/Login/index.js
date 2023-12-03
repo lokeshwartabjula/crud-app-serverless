@@ -1,35 +1,53 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import { authenticateUser } from '../../api';
 
 const Login = ({ setIsAuthenticated }) => {
-  const adminEmail = 'admin@example.com';
-  const adminPassword = 'qwerty';
 
   const [email, setEmail] = useState('admin@example.com');
-  const [password, setPassword] = useState('qwerty');
+  const [password, setPassword] = useState('');
 
-  const handleLogin = e => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (email === adminEmail && password === adminPassword) {
-      Swal.fire({
-        timer: 1500,
-        showConfirmButton: false,
-        willOpen: () => {
-          Swal.showLoading();
-        },
-        willClose: () => {
-          localStorage.setItem('is_authenticated', true);
-          setIsAuthenticated(true);
+    if (email && password ) {
+      const response = await authenticateUser({email, password});
+      if (response) {
+        Swal.fire({
+          timer: 1500,
+          showConfirmButton: false,
+          willOpen: () => {
+            Swal.showLoading();
+          },
+          willClose: () => {
+            localStorage.setItem('is_authenticated', true);
+            setIsAuthenticated(true);
 
-          Swal.fire({
-            icon: 'success',
-            title: 'Successfully logged in!',
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        },
-      });
+            Swal.fire({
+              icon: 'success',
+              title: 'Successfully logged in!',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          },
+        });
+      } else {
+        Swal.fire({
+          timer: 1500,
+          showConfirmButton: false,
+          willOpen: () => {
+            Swal.showLoading();
+          },
+          willClose: () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: 'Incorrect email or password.',
+              showConfirmButton: true,
+            });
+          },
+        });
+      }
     } else {
       Swal.fire({
         timer: 1500,
@@ -67,7 +85,7 @@ const Login = ({ setIsAuthenticated }) => {
           id="password"
           type="password"
           name="password"
-          placeholder="qwerty"
+          placeholder=""
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
