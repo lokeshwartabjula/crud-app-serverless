@@ -30,7 +30,20 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
             employees.map((employee, i) => (
               <tr key={employee.id}>
                 <td>{employee.id}</td>
-                <td><img src={`https://b00936909-image-bucket.s3.amazonaws.com/image_content_${employee.id}.jpg` || "https://images.freeimages.com/images/large-previews/0f9/halloween-pumpkins-2-1199288.jpg?fmt=webp&w=350"} alt="avatar" className='employee-avatar'/></td>
+                <td>
+                  {/* <img src={`https://csci5902-loki.s3.amazonaws.com/image_content_${employee.id}.png` || "https://images.freeimages.com/images/large-previews/0f9/halloween-pumpkins-2-1199288.jpg?fmt=webp&w=350"} alt="avatar" className='employee-avatar'/> */}
+                  {employee.id && (
+                    <img
+                      src={`https://csci5902-loki.s3.amazonaws.com/image_content_${employee.id}.png`}
+                      alt="avatar"
+                      className="employee-avatar"
+                      onError={(e) => {
+                        e.target.src =
+                          'https://images.freeimages.com/images/large-previews/0f9/halloween-pumpkins-2-1199288.jpg?fmt=webp&w=350';
+                      }}
+                    />
+                  )}
+                  </td>
                 <td>{employee.firstName}</td>
                 <td>{employee.lastName}</td>
                 <td>{employee.email}</td>
